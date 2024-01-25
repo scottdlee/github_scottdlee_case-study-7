@@ -64,7 +64,7 @@ class UploadForm(FlaskForm):
 vertexai.init(project=os.environ["PROJECT_ID"], location="us-central1")
 
 llm = VertexAI(
-    model_name="text-bison@001", max_output_tokens=1024, temperature=0.7, top_p=0.5
+    model_name="text-bison@002", max_output_tokens=1000, temperature=0.7, top_p=0.5
 )
 
 @app.route("/", methods=["GET", "POST"])
@@ -87,20 +87,22 @@ def index():
 you are a senior consultant at technology company Inforte Corp.
 you only write articles about technology trends.
 write an upbeat, professional article at a {form.reading_level.data} reading level about a trend in technology, specified below
-1. begin with a compelling or surprising statement or question to capture the reader's interest
-2. include a personal story telling how the trend has impacted you
-3. provide a fact or statistic about the trend which highlights its importance / relevance
-4. close with a clear call to action for the reader, directing them to your company's website (http://www.afkbrb.com)
-5. include 3-4 relevant hash tags at the end of the article
+1. begin with a compelling or surprising statement or question to capture the reader's interest.
+2. include a personal story telling how the trend has impacted you.
+3. provide 1-2 facts or statistics about the trend which highlights its importance / relevance.
+4. close with a clear call to action for the reader, directing them to your company's website (http://www.afkbrb.com) for more information.
+5. include 3-4 relevant hash tags at the end of the article.
 technology trend: {form.tech_trend.data}"""
+
         logging.debug(prompt)
         response = llm(prompt)
-        #response = response.replace("\n- ", "\n\n* ")
-        #markdown_response = markdown.markdown(response)
+        response = response.replace("\n- ", "\n\n* ")
+        markdown_response = markdown.markdown(response)
         session["response"] = response
-        logging.debug(f"Response: \n{response}")
-        #os.remove(pdf_temp_filename)
+        logging.debug(f"Response: \n{markdown_response}")
+
         return redirect(url_for("ttwb_results"))
+
     else:
         logging.error(f"Form errors: {form.errors}")
 
@@ -113,7 +115,7 @@ def ttwb_results():
 
     # flash("Awaiting the model's response!")
     return render_template(
-        "ttwb_results.html", response_text=session["response"]
+        "ttwb_results.html", response_text=session["markdown_response"]
     )
 
 
