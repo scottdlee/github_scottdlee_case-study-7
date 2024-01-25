@@ -98,7 +98,7 @@ technology trend: {form.tech_trend.data}"""
         response = llm(prompt)
         response = response.replace("\n- ", "\n\n* ")
         markdown_response = markdown.markdown(response)
-        session["response"] = response
+        session["markdown_response"] = markdown_response
         logging.debug(f"Response: \n{markdown_response}")
 
         return redirect(url_for("ttwb_results"))
